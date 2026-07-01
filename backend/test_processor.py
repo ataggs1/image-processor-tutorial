@@ -57,3 +57,26 @@ def test_create_thumbnail(sample_image):
     thumbnail_default = processor.create_thumbnail(sample_image)
     assert thumbnail_default.size[0] <= 200, "Default max_size should be 200"
     assert thumbnail_default.size[1] <= 200, "Default max_size should be 200"
+
+
+def test_resize_invalid_dimensions(sample_image):
+    """Test that resize raises ValueError for invalid dimensions"""
+    processor = ImageProcessor()
+    with pytest.raises(ValueError):
+        processor.resize(sample_image, -100, 500)
+    with pytest.raises(ValueError):
+        processor.resize(sample_image, 500, 0)
+
+
+def test_blur_negative_radius(sample_image):
+    """Test that apply_blur raises ValueError for negative radius"""
+    processor = ImageProcessor()
+    with pytest.raises(ValueError):
+        processor.apply_blur(sample_image, radius=-5)
+
+
+def test_thumbnail_invalid_size(sample_image):
+    """Test that create_thumbnail raises ValueError for invalid size"""
+    processor = ImageProcessor()
+    with pytest.raises(ValueError):
+        processor.create_thumbnail(sample_image, max_size=0)

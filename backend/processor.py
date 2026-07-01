@@ -1,5 +1,4 @@
 from PIL import Image, ImageFilter
-from typing import Tuple, Optional
 
 
 class ImageProcessor:
@@ -16,7 +15,12 @@ class ImageProcessor:
 
         Returns:
             Resized PIL Image object
+
+        Raises:
+            ValueError: If width or height is not positive
         """
+        if width <= 0 or height <= 0:
+            raise ValueError(f"Width and height must be positive integers, got {width}x{height}")
         return image.resize((width, height), Image.Resampling.LANCZOS)
 
     def convert_grayscale(self, image: Image.Image) -> Image.Image:
@@ -41,7 +45,12 @@ class ImageProcessor:
 
         Returns:
             Blurred PIL Image object
+
+        Raises:
+            ValueError: If radius is negative
         """
+        if radius < 0:
+            raise ValueError(f"Radius must be non-negative, got {radius}")
         return image.filter(ImageFilter.GaussianBlur(radius))
 
     def create_thumbnail(self, image: Image.Image, max_size: int = 200) -> Image.Image:
@@ -54,7 +63,12 @@ class ImageProcessor:
 
         Returns:
             Thumbnail PIL Image object
+
+        Raises:
+            ValueError: If max_size is not positive
         """
+        if max_size <= 0:
+            raise ValueError(f"Max size must be positive, got {max_size}")
         thumb = image.copy()
         thumb.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
         return thumb
