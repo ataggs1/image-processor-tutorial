@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processor - Upload & Process Images</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app" class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Image Processor</h1>
+            <p class="subtitle">Upload and process images with various filters</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Upload Section -->
+            <section class="upload-section" aria-label="Image upload section">
+                <div class="upload-area" id="uploadArea" aria-label="Drag and drop area for image upload">
+                    <!-- SVG Upload Icon -->
+                    <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="upload-text">Drag and drop your image here or click to select</p>
+                    <p class="upload-hint">Supported formats: JPG, PNG, GIF, WebP</p>
+
+                    <!-- Hidden File Input -->
+                    <input
+                        type="file"
+                        id="fileInput"
+                        class="file-input"
+                        accept="image/*"
+                        aria-label="Select image file to upload"
+                    >
+                </div>
+            </section>
+
+            <!-- Processing Options Section -->
+            <section class="options-section" aria-label="Image processing options">
+                <h2>Processing Options</h2>
+
+                <!-- Processing Checkboxes -->
+                <fieldset class="options-grid">
+                    <legend class="sr-only">Select processing operations</legend>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input
+                                type="checkbox"
+                                id="resizeCheckbox"
+                                class="option-checkbox"
+                                aria-label="Enable image resize"
+                            >
+                            <span class="checkbox-text">Resize</span>
+                        </label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input
+                                type="checkbox"
+                                id="grayscaleCheckbox"
+                                class="option-checkbox"
+                                aria-label="Enable grayscale filter"
+                            >
+                            <span class="checkbox-text">Grayscale</span>
+                        </label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input
+                                type="checkbox"
+                                id="blurCheckbox"
+                                class="option-checkbox"
+                                aria-label="Enable blur filter"
+                            >
+                            <span class="checkbox-text">Blur</span>
+                        </label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input
+                                type="checkbox"
+                                id="thumbnailCheckbox"
+                                class="option-checkbox"
+                                aria-label="Enable thumbnail generation"
+                            >
+                            <span class="checkbox-text">Thumbnail</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <!-- Resize Dimension Inputs (Hidden by Default) -->
+                <div class="resize-options" id="resizeOptions" hidden aria-hidden="true">
+                    <h3>Resize Dimensions</h3>
+                    <div class="dimension-inputs">
+                        <div class="input-group">
+                            <label for="widthInput">Width (px):</label>
+                            <input
+                                type="number"
+                                id="widthInput"
+                                class="dimension-input"
+                                min="1"
+                                max="4000"
+                                value="800"
+                                aria-label="Image width in pixels"
+                            >
+                        </div>
+                        <div class="input-group">
+                            <label for="heightInput">Height (px):</label>
+                            <input
+                                type="number"
+                                id="heightInput"
+                                class="dimension-input"
+                                min="1"
+                                max="4000"
+                                value="600"
+                                aria-label="Image height in pixels"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Process Button -->
+            <section class="button-section" aria-label="Action buttons">
+                <button
+                    id="processButton"
+                    class="process-button"
+                    disabled
+                    aria-label="Process the uploaded image with selected options"
+                >
+                    Process Image
+                </button>
+            </section>
+
+            <!-- Loading State -->
+            <div class="loading-spinner" id="loadingSpinner" hidden aria-hidden="true">
+                <div class="spinner"></div>
+                <p>Processing your image...</p>
+            </div>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection" hidden role="alert" aria-live="polite">
+                <div class="error-container">
+                    <h3>Error</h3>
+                    <p id="errorMessage"></p>
+                    <button
+                        id="closeErrorButton"
+                        class="close-error-button"
+                        aria-label="Close error message"
+                    >
+                        ✕
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" hidden aria-label="Processing results">
+                <h2>Results</h2>
+                <div class="results-grid">
+                    <!-- Original Image -->
+                    <div class="result-container">
+                        <h3>Original Image</h3>
+                        <div class="image-wrapper">
+                            <img
+                                id="originalImage"
+                                class="result-image"
+                                alt="Original uploaded image"
+                            >
+                        </div>
+                        <p id="originalImageInfo" class="image-info"></p>
+                    </div>
+
+                    <!-- Processed Image -->
+                    <div class="result-container">
+                        <h3>Processed Image</h3>
+                        <div class="image-wrapper">
+                            <img
+                                id="processedImage"
+                                class="result-image"
+                                alt="Processed image after applying filters"
+                            >
+                        </div>
+                        <p id="processedImageInfo" class="image-info"></p>
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                <div class="download-section">
+                    <button
+                        id="downloadButton"
+                        class="download-button"
+                        aria-label="Download processed image"
+                    >
+                        Download Processed Image
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Image Processor Tutorial - Phase 1: Docker</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
