@@ -18,6 +18,7 @@ Two-service application:
 
 ```bash
 # Build and run with Docker Compose
+# (docker-compose.yml will be created in Task 10)
 docker-compose up --build
 
 # Access the application

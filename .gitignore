@@ -48,3 +48,13 @@ logs/
 # Environment variables
 .env
 .env.local
+
+# Node artifacts (if used)
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+docker-compose.override.yml
