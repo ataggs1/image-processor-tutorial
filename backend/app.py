@@ -39,6 +39,9 @@ def create_app():
     MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', 10 * 1024 * 1024))  # 10MB default
     ALLOWED_EXTENSIONS = set(os.getenv('ALLOWED_EXTENSIONS', 'png,jpg,jpeg,gif').split(','))
 
+    # Store config in app for access in routes
+    app.config['MAX_FILE_SIZE'] = MAX_FILE_SIZE
+
     # Create directories if they don't exist
     Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
     Path(PROCESSED_FOLDER).mkdir(parents=True, exist_ok=True)
@@ -55,6 +58,12 @@ def create_app():
     def process_image():
         """Process uploaded image with specified operations"""
         try:
+            # Check file size
+            if request.content_length and request.content_length > app.config['MAX_FILE_SIZE']:
+                return jsonify({
+                    "error": f"File too large. Maximum size: {app.config['MAX_FILE_SIZE']} bytes"
+                }), 413
+
             # Check if file was uploaded
             if 'file' not in request.files:
                 return jsonify({"error": "No file provided"}), 400
@@ -90,6 +99,19 @@ def create_app():
                 if operation == 'resize':
                     width = params.get('width')
                     height = params.get('height')
+                    # Validate resize parameters
+                    if width is None or height is None:
+                        return jsonify({
+                            "error": "Resize operation requires 'width' and 'height' parameters"
+                        }), 400
+                    if not isinstance(width, int) or not isinstance(height, int):
+                        return jsonify({
+                            "error": "Width and height must be integers"
+                        }), 400
+                    if width <= 0 or height <= 0:
+                        return jsonify({
+                            "error": "Width and height must be positive integers"
+                        }), 400
                     processed_image = processor.resize(processed_image, width, height)
 
                 elif operation == 'grayscale':
